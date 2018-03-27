@@ -10,7 +10,7 @@ public class Employee {
 	String name, address;
 	long empid;
 	Date doj;
-	long id;
+	transient long id;
 	
 	
 	public long getId() {
@@ -26,7 +26,7 @@ public class Employee {
 		this.name = name;
 		this.address = address;
 		this.empid = empid;
-		
+		doj = new Date();
 	}
 	
 	public Date getDoj() {
@@ -62,5 +62,12 @@ public class Employee {
 		this.empid = empid;
 	}
 
+	
+	
+	
 
 }
+
+
+
+

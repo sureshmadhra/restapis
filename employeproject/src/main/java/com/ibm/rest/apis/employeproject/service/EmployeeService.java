@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
+
+
 
 import com.ibm.rest.apis.employeproject.database.DatabaseClass;
 import com.ibm.rest.apis.employeproject.model.Employee;
@@ -29,6 +32,7 @@ public class EmployeeService {
 	
 	public Employee addEmployee(Employee emp) {
 		emp.setId(emplList.size() + 1);
+		emp.setDoj(new Date());
 		emplList.put(emp.getId(), emp);
 		return emp;
 	}
@@ -50,14 +54,48 @@ public class EmployeeService {
 	}
 	
 	
+	public List<Employee> getAllEmployeeForDOJYear(int year) {
+		List<Employee> empListYear = new ArrayList<>();
+		
+		Calendar cal = Calendar.getInstance();
+		
+		
+		for (Employee emp : emplList.values()) {
+			cal.setTime(emp.getDoj());
+			if (cal.get(Calendar.YEAR) == year) {
+				empListYear.add(emp);
+			}
+		}
+		return empListYear;
+	}
+
+	public List<Employee> getAllEmployeePaginated(int start, int size) {
+		ArrayList<Employee> list = new ArrayList<Employee>(emplList.values());
+		if (start + size > list.size()) {
+			return new ArrayList<Employee>();
+		}
+		else {
+			
+		
+		return list.subList(start, start + size);
+		
+		} 
+	}
+	
+
 }
 
 
-///
 
 
 
 
+
+
+
+	
+	
+	
 
 	
 	
