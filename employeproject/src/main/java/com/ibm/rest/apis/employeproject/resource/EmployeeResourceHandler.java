@@ -1,4 +1,5 @@
 package com.ibm.rest.apis.employeproject.resource;
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.BeanParam;
@@ -15,14 +16,23 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import com.ibm.rest.apis.employeproject.errorhandler.ErrorMessage;
+import com.ibm.rest.apis.employeproject.exception.EmployeeException;
+import com.ibm.rest.apis.employeproject.exception.InvalidEmpIdException;
 import com.ibm.rest.apis.employeproject.model.Employee;
 import com.ibm.rest.apis.employeproject.model.EmployeeBean;
+import com.ibm.rest.apis.employeproject.model.ExceptionModel;
 import com.ibm.rest.apis.employeproject.service.EmployeeService;
 
 @Path("employee")
@@ -33,32 +43,139 @@ public class EmployeeResourceHandler {
 	EmployeeService employeeService = new EmployeeService();
 	
 	/*@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	 * 
+	 * 
+	 * 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Employee> getMessages() {
 		System.out.println("Get Called");
 		return employeeService.getAllEmployees();
+	}
+	
+	*/
+	
+	
+	
+	// GET HTTP Method Example
+	// Sending Response using GenericEntity
+	// URL Example
+	// http://localhost:8080/employeproject/empinventory/employee
+		
+	
+	/*@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getMessages() {
+		System.out.println("Get Called");
+		
+		 GenericEntity<List<Employee>> entity = 
+		            new GenericEntity<List<Employee>>(employeeService.getAllEmployees()) {};
+		return Response
+					.accepted(entity)
+					//.status(Status.FOUND)
+					.build();
+		
 	}
 	*/
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
-	
-	
-	
-	// POST HTTP Method Example
+	// POST HTTP Method Example - How to send Response using Response Class
 	// Adding new Employee Resource
 	// URL Example
 	// http://localhost:8080/employeproject/empinventory/employee
 		
-	@POST
-	@Produces (MediaType.APPLICATION_JSON)
-	@Consumes (MediaType.APPLICATION_JSON)
+	/*@POST
+	@Produces ({MediaType.TEXT_PLAIN ,MediaType.APPLICATION_JSON})
+	@Consumes ({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+		
+	public Response addEmp(@Context UriInfo uri, Employee emp) {
+		Employee newemp = employeeService.addEmployee(emp);
+		URI u = uri.getAbsolutePathBuilder().path(newemp.getId()+"").build();
+		System.out.println(u);
+		
+		ResponseBuilder rb = Response.created(u);
+		rb.entity(newemp);
+		rb.status(Status.CREATED);
+		Response rs = rb.build();
+		return rs;
+	}*/
 	
-	public Employee addEmp(Employee emp) {
-		return employeeService.addEmployee(emp);
+	
+	
+	
+	// GET HTTP Method Example - How to send Response using Response Class
+	// Adding new Employee Resource
+	// URL Example
+	// http://localhost:8080/employeproject/empinventory/employee
+		
+	
+	
+	/*@GET
+	@Produces ({MediaType.TEXT_PLAIN ,MediaType.APPLICATION_JSON})
+	@Consumes ({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+	
+	public Response getEmployeeDetails() {
+		
+		List <Employee> empList = employeeService.getAllEmployees();
+		
+		GenericEntity <List<Employee>>  empEntiesinArray = null;
+		
+		
+		empEntiesinArray = new GenericEntity<List<Employee>>(empList) {};
+		
+		return Response.accepted(empEntiesinArray)
+						.status(Status.FOUND)
+						.build();
+		
 		
 	}
+	
+	*/
+	
+	
+	
+	@GET
+	@Produces ({MediaType.TEXT_PLAIN ,MediaType.APPLICATION_JSON})
+	@Consumes ({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+	
+	public Response getEmployeeDetails(@QueryParam ("year") long year) {
+		
+		if (year == 0 ) {
+		
+			ErrorMessage message = new ErrorMessage("Hello You have passed invalid year", "http://yahoo.com", 1002, "GetEmployeeDetails()");
+			
+			ResponseBuilder resb = Response.accepted(message);
+							resb.status(Status.BAD_REQUEST);
+			Response response =		resb.build();
+			throw new WebApplicationException(response);
+		}
+		else {
+		
+		List <Employee> empList = employeeService.getAllEmployees();
+		
+		GenericEntity <List<Employee>>  empEntiesinArray = null;
+		
+		
+		empEntiesinArray = new GenericEntity<List<Employee>>(empList) {};
+		
+		return Response.accepted(empEntiesinArray)
+						.status(Status.FOUND)
+						.build();
+		
+		}
+	}
+	
+	
 	
 	
 	// PUT HTTP Method Example
@@ -318,31 +435,15 @@ public class EmployeeResourceHandler {
 	// http://localhost:8080/employeproject/empinventory/employee?year=start
 	
  
-	/*
-	@POST
-	@Produces (MediaType.APPLICATION_JSON)
 	
-	public List <Employee> getEmployeeListUsingContextParamHeader(@FormParam ("year") int year, @FormParam ("year") int start, @FormParam ("size") int size)  
+	/*@POST
+	@Produces ({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN,})
+	@Consumes (MediaType.APPLICATION_FORM_URLENCODED)
+	public String getEmployeeListUsingContextParamHeader(@FormParam ("year") int year[], @FormParam ("year") int start, @FormParam ("size") int size)  
 	{
-		System.out.print("Insite getEmployeeListUsingCookieParam" );
-		 if (start >0 &  size >0){
-				
-				
-				return employeeService.getAllEmployeePaginated(start, size);
-				}
-			
-		
-		else {
-				if (year >0) {
 		
 		
-			return employeeService.getAllEmployeeForDOJYear(year);
-				}
-				else
-				{
-				return	employeeService.getAllEmployees();
-				}
-		}
+		return "Sureh";
 		
 	}
 	
