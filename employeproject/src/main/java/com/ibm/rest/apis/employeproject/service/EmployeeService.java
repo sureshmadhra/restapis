@@ -1,10 +1,14 @@
 package com.ibm.rest.apis.employeproject.service;
 
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.core.UriInfo;
+
 import java.util.Calendar;
 
 
@@ -30,10 +34,16 @@ public class EmployeeService {
 	}
 	
 	
-	public Employee addEmployee(Employee emp) {
+	public Employee addEmployee(Employee emp, UriInfo uri) {
 		emp.setId(emplList.size() + 1);
 		emp.setDoj(new Date());
+		System.out.println(uri.getRequestUri());
+		System.out.println(uri.getBaseUri());
+		String resourceURI = uri.getAbsolutePathBuilder().path(emp.getId()+"").toString();
+		
+		emp.addLink(resourceURI, "self");
 		emplList.put(emp.getId(), emp);
+		
 		return emp;
 	}
 	

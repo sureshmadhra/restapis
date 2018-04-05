@@ -1,7 +1,14 @@
 package com.ibm.rest.apis.employeproject.model;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.ibm.rest.apis.employeproject.database.*;
 
 @XmlRootElement
 
@@ -12,10 +19,37 @@ public class Employee {
 	Date doj;
 	transient long id;
 	
+	List <Link> links = new ArrayList();
+	
+	private Map<Long, Department> departments = new HashMap<>();
+	
+	
+	//@XmlTransient
+	public Map<Long, Department> getDepartments() {
+		return departments;
+	}
+
+	
+
+	public void setDepartments(Map<Long, Department> departments) {
+		this.departments = departments;
+	}
+
+	
+
 	
 	public long getId() {
 		return id;
 	}
+
+	public List<Link> getLinkRepo() {
+		return links;
+	}
+
+	public void setLinkRepo(List<Link> link) {
+		this.links = link;
+	}
+	
 
 	public void setId(long id) {
 		this.id = id;
@@ -64,7 +98,13 @@ public class Employee {
 
 	
 	
-	
+	public void addLink(String url, String rel) {
+		Link link = new Link(url,rel);
+		link.setLink(url);
+		link.setRelation(rel);
+		links.add(link);
+	}
+
 
 }
 

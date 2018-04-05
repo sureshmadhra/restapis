@@ -28,8 +28,8 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import com.ibm.rest.apis.employeproject.errorhandler.ErrorMessage;
-import com.ibm.rest.apis.employeproject.exception.EmployeeException;
-import com.ibm.rest.apis.employeproject.exception.InvalidEmpIdException;
+import com.ibm.rest.apis.employeproject.exception.DataInvalidException;
+import com.ibm.rest.apis.employeproject.exception.MyAllException;
 import com.ibm.rest.apis.employeproject.model.Employee;
 import com.ibm.rest.apis.employeproject.model.EmployeeBean;
 import com.ibm.rest.apis.employeproject.model.ExceptionModel;
@@ -37,6 +37,8 @@ import com.ibm.rest.apis.employeproject.service.EmployeeService;
 
 @Path("employee")
 
+@Produces ({MediaType.TEXT_PLAIN ,MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Consumes ({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 
 public class EmployeeResourceHandler {
 	
@@ -54,14 +56,13 @@ public class EmployeeResourceHandler {
 	*/
 	
 	
-	
 	// GET HTTP Method Example
 	// Sending Response using GenericEntity
 	// URL Example
 	// http://localhost:8080/employeproject/empinventory/employee
 		
 	
-	/*@GET
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMessages() {
 		System.out.println("Get Called");
@@ -74,16 +75,7 @@ public class EmployeeResourceHandler {
 					.build();
 		
 	}
-	*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	
 	
 	
@@ -99,18 +91,75 @@ public class EmployeeResourceHandler {
 	@Consumes ({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
 		
 	public Response addEmp(@Context UriInfo uri, Employee emp) {
+		System.out.println("Inside Add Method.... ");
+		
 		Employee newemp = employeeService.addEmployee(emp);
 		URI u = uri.getAbsolutePathBuilder().path(newemp.getId()+"").build();
-		System.out.println(u);
 		
 		ResponseBuilder rb = Response.created(u);
 		rb.entity(newemp);
 		rb.status(Status.CREATED);
 		Response rs = rb.build();
 		return rs;
-	}*/
+	}
+	*/
 	
 	
+	
+	@POST
+	@Produces (MediaType.APPLICATION_JSON)
+	@Consumes (MediaType.APPLICATION_JSON)
+		
+	public Response  addEmp(@Context UriInfo uri, Employee emp) {
+			
+		Employee newemp = employeeService.addEmployee(emp,uri);
+		return Response.accepted(newemp)
+				.status(Status.CREATED)
+				.build();
+		
+	}
+	
+	
+	
+	
+	@Path("/{employeeKeyId}/department/{departmid}")
+
+	public DepartmentResourceHandler getDepartmentResource()
+	{
+		System.out.println("Inside department");
+		return new DepartmentResourceHandler();
+	}
+	
+	
+	
+	
+	
+	//@Path ("/{id}/dept/{deptname}")
+	//public DeptResourceHandle getDeptResource() {
+		//return new DeptResourceHandle();
+	//}
+	
+	
+	
+	
+	
+
+
+
+	
+	/*@POST
+	@Produces (MediaType.APPLICATION_XML)
+	@Consumes (MediaType.APPLICATION_JSON)
+		
+	public Employee addNewEmp(@Context UriInfo uri, Employee emp) {
+		System.out.println("Inside Add Method.... ");
+		
+		Employee newemp = employeeService.addEmployee(emp);
+		return newemp;
+	}
+	*/
+	
+
 	
 	
 	// GET HTTP Method Example - How to send Response using Response Class
@@ -144,21 +193,16 @@ public class EmployeeResourceHandler {
 	
 	
 	
-	@GET
-	@Produces ({MediaType.TEXT_PLAIN ,MediaType.APPLICATION_JSON})
-	@Consumes ({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+	/*@GET
 	
-	public Response getEmployeeDetails(@QueryParam ("year") long year) {
+	@Produces (MediaType.APPLICATION_JSON)
+	@Consumes (MediaType.APPLICATION_JSON)
+	public Response getEmployeeDetails(@QueryParam ("year") long year) throws MyAllException  {
 		
 		if (year == 0 ) {
-		
-			ErrorMessage message = new ErrorMessage("Hello You have passed invalid year", "http://yahoo.com", 1002, "GetEmployeeDetails()");
+					throw new MyAllException("Error");
+			}
 			
-			ResponseBuilder resb = Response.accepted(message);
-							resb.status(Status.BAD_REQUEST);
-			Response response =		resb.build();
-			throw new WebApplicationException(response);
-		}
 		else {
 		
 		List <Employee> empList = employeeService.getAllEmployees();
@@ -174,6 +218,39 @@ public class EmployeeResourceHandler {
 		
 		}
 	}
+	
+	*/
+	
+	
+	/*@GET
+	
+	@Produces (MediaType.APPLICATION_JSON)
+	@Consumes (MediaType.APPLICATION_JSON)
+	public Response getEmployeeDetails() throws MyAllException  {
+		
+		
+		List <Employee> empList = employeeService.getAllEmployees();
+		
+		GenericEntity <List<Employee>>  empEntiesinArray = null;
+		
+		
+		empEntiesinArray = new GenericEntity<List<Employee>>(empList) {};
+		
+		return Response.accepted(empEntiesinArray)
+						.status(Status.FOUND)
+						.build();
+		
+		}
+	
+	*/
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
